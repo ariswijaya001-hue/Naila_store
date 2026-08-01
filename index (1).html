@@ -42,7 +42,8 @@
   .card-body{padding:12px; flex:1; display:flex; flex-direction:column;}
   .pname{font-weight:600; font-size:13px; line-height:1.3; min-height:2.2em; margin:0 0 6px;}
   .price{font-weight:700; font-size:15px; color:var(--green-mid); margin:0;}
-  .dp{font-size:11px; color:var(--muted2); margin:2px 0 0;}
+  .desc{font-size:12px; color:var(--muted); margin:4px 0 0; line-height:1.4;}
+  textarea{width:100%; font-size:14px; border:1px solid var(--line); border-radius:12px; padding:10px 12px; background:#fff; font-family:inherit; resize:vertical;}
   .edit-btn{margin-top:6px; width:100%; border:1px solid var(--line); background:none; color:var(--green-dark); border-radius:8px; padding:6px; font-size:12px; font-weight:600; cursor:pointer;}
   .wa-btn{margin-top:8px; width:100%; display:flex; align-items:center; justify-content:center; gap:4px; background:#25D366; color:#fff; text-decoration:none; border-radius:8px; padding:6px; font-size:12px; font-weight:600; box-sizing:border-box;}
   .edit-form input{width:100%; font-size:13px; border:1px solid var(--line); border-radius:8px; padding:6px 8px; margin-bottom:6px; font-family:inherit;}
@@ -136,15 +137,13 @@
       <label class="field-label">Nama Produk</label>
       <input type="text" id="nameInput" placeholder="Contoh: HP OPPO A3 Pro 5G" />
     </div>
-    <div class="field-row">
-      <div class="field">
-        <label class="field-label">Harga (Rp)</label>
-        <input type="number" id="priceInput" placeholder="3400000" />
-      </div>
-      <div class="field">
-        <label class="field-label">Uang Muka (Rp)</label>
-        <input type="number" id="dpInput" placeholder="600000" />
-      </div>
+    <div class="field">
+      <label class="field-label">Harga (Rp)</label>
+      <input type="number" id="priceInput" placeholder="3400000" />
+    </div>
+    <div class="field">
+      <label class="field-label">Deskripsi Produk</label>
+      <textarea id="descInput" rows="3" placeholder="Contoh: RAM 8GB, penyimpanan 256GB, garansi resmi 1 tahun"></textarea>
     </div>
     <div class="sheet-actions">
       <button class="btn-outline" id="addCancel">Batal</button>
@@ -157,7 +156,7 @@
   KONFIGURASI — GANTI DENGAN CONFIG PROYEK ANDA SENDIRI
   Cara dapatkan URL Apps Script:
   1. Buat Google Sheet baru, beri nama sheet "Produk" (tab bawah)
-  2. Baris 1: isi header id, name, price, downPayment, image
+  2. Baris 1: isi header id, name, price, description, image
   3. Menu Extensions > Apps Script, tempel kode dari file Code.gs (satu paket dengan zip ini)
   4. Klik Deploy > New deployment > pilih tipe "Web app"
      - Execute as: Me
@@ -263,18 +262,14 @@
       const saveBtn = card.querySelector(".btn-save");
       if (saveBtn) saveBtn.onclick = async () => {
         const p = card.querySelector(".edit-price").value;
-        const d = card.querySelector(".edit-dp").value;
         const prevPrice = item.price;
-        const prevDp = item.downPayment;
         item.price = Number(p) || 0;
-        item.downPayment = Number(d) || 0;
         editingId = null;
         render();
-        const result = await callApi({ action: "update", id: item.id, price: item.price, downPayment: item.downPayment });
+        const result = await callApi({ action: "update", id: item.id, price: item.price });
         if (!result.success) {
           alert("Gagal menyimpan perubahan harga: " + result.error);
           item.price = prevPrice;
-          item.downPayment = prevDp;
           render();
         }
       };
@@ -296,7 +291,6 @@
           ${editing ? `
             <div class="edit-form">
               <input type="number" class="edit-price" placeholder="Harga" value="${item.price}" />
-              <input type="number" class="edit-dp" placeholder="Uang muka" value="${item.downPayment}" />
               <div class="edit-row">
                 <button class="btn-save">✓ Simpan</button>
                 <button class="btn-cancel">✕</button>
@@ -304,7 +298,7 @@
             </div>
           ` : `
             <p class="price">${formatRp(item.price)}</p>
-            <p class="dp">Uang Muka: ${formatRp(item.downPayment)}</p>
+            ${item.description ? `<p class="desc">${escapeHtml(item.description)}</p>` : ""}
             <a class="wa-btn" href="${waLink(item)}" target="_blank" rel="noopener noreferrer">💬 Tanya via WA</a>
             ${isAdmin ? `<button class="edit-btn">✎ Ubah harga</button>` : ""}
           `}
@@ -367,7 +361,7 @@
     $("uploadPlaceholder").classList.remove("hidden");
     $("nameInput").value = "";
     $("priceInput").value = "";
-    $("dpInput").value = "";
+    $("descInput").value = "";
     $("addOverlay").classList.remove("hidden");
   };
   $("addCancel").onclick = () => $("addOverlay").classList.add("hidden");
@@ -402,7 +396,7 @@
       id: Date.now().toString(),
       name,
       price: Number(price),
-      downPayment: Number($("dpInput").value || 0),
+      description: $("descInput").value.trim(),
       image: draftImage
     };
     items.unshift(newItem);
@@ -414,7 +408,7 @@
       id: newItem.id,
       name: newItem.name,
       price: newItem.price,
-      downPayment: newItem.downPayment,
+      description: newItem.description,
       imageBase64: draftImage
     });
     $("addSave").textContent = "Simpan Produk";
