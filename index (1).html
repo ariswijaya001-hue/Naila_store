@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+<title>Naila Store</title>
+<link rel="manifest" href="manifest.json" />
+<meta name="theme-color" content="#1B4332" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700;900&family=Inter:wght@400;500;600;700&family=Great+Vibes&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --green-dark:#1B4332; --green-mid:#2D6A4F; --green-light:#95D5B2; --green-pale:#B7E4C7;
+    --gold:#C9A227; --cream:#F6F3EC; --card:#FFFFFF; --line:#D8D2BF;
+    --text:#1B2E22; --muted:#6B7B70; --muted2:#8A8577; --red:#B3261E;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; background:var(--cream); font-family:'Inter',sans-serif; color:var(--text);}
+  .font-display{font-family:'Fraunces',serif;}
+  header{background:var(--green-dark); padding:32px 20px 40px; position:relative; overflow:hidden;}
+  header::before{content:'';position:absolute; right:-32px; top:-32px; width:160px; height:160px; border-radius:50%; background:var(--green-mid); opacity:.4;}
+  header::after{content:'';position:absolute; right:40px; top:64px; width:64px; height:64px; border-radius:50%; background:var(--gold); opacity:.2;}
+  .header-inner{position:relative; display:flex; justify-content:space-between; align-items:flex-start;}
+  .eyebrow{display:flex; align-items:center; gap:8px; margin-bottom:4px;}
+  .eyebrow span{font-size:12px; letter-spacing:.2em; text-transform:uppercase; color:var(--green-light);}
+  h1{font-family:'Great Vibes',cursive; font-size:52px; font-weight:400; color:#fff; margin:0; line-height:1;}
+  .logo-wordmark{height:56px; width:auto; display:block; margin:2px 0 0; filter:drop-shadow(0 1px 2px rgba(0,0,0,.15));}
+  .subcount{font-size:14px; color:var(--green-pale); margin-top:4px;}
+  .lock-btn{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.1);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;}
+  .admin-badge{display:inline-block; margin-top:12px; background:rgba(201,162,39,.2); border:1px solid rgba(201,162,39,.4); border-radius:999px; padding:4px 12px; font-size:11px; font-weight:600; color:var(--gold);}
+  main{padding:0 16px 40px; max-width:900px; margin:-20px auto 0;}
+  .empty{background:var(--card); border-radius:16px; padding:40px; text-align:center; margin-top:24px;}
+  .empty p.title{font-family:'Fraunces',serif; font-weight:700; font-size:18px; color:var(--green-dark); margin:8px 0 4px;}
+  .empty p.sub{font-size:14px; color:var(--muted); margin:0;}
+  .grid{display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:24px;}
+  @media(min-width:640px){.grid{grid-template-columns:repeat(3,1fr);}}
+  .card{background:var(--card); border-radius:16px; overflow:hidden; display:flex; flex-direction:column; box-shadow:0 1px 3px rgba(0,0,0,.06);}
+  .img-wrap{aspect-ratio:1/1; background:#F0EEE6; position:relative;}
+  .img-wrap img{width:100%; height:100%; object-fit:cover; display:block;}
+  .img-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#C7C2B4;font-size:28px;}
+  .del-btn{position:absolute; top:8px; right:8px; width:28px; height:28px; border-radius:50%; background:rgba(255,255,255,.9); border:none; color:var(--red); display:flex; align-items:center; justify-content:center; cursor:pointer;}
+  .card-body{padding:12px; flex:1; display:flex; flex-direction:column;}
+  .pname{font-weight:600; font-size:13px; line-height:1.3; min-height:2.2em; margin:0 0 6px;}
+  .price{font-weight:700; font-size:15px; color:var(--green-mid); margin:0;}
+  .dp{font-size:11px; color:var(--muted2); margin:2px 0 0;}
+  .edit-btn{margin-top:6px; width:100%; border:1px solid var(--line); background:none; color:var(--green-dark); border-radius:8px; padding:6px; font-size:12px; font-weight:600; cursor:pointer;}
+  .wa-btn{margin-top:8px; width:100%; display:flex; align-items:center; justify-content:center; gap:4px; background:#25D366; color:#fff; text-decoration:none; border-radius:8px; padding:6px; font-size:12px; font-weight:600; box-sizing:border-box;}
+  .edit-form input{width:100%; font-size:13px; border:1px solid var(--line); border-radius:8px; padding:6px 8px; margin-bottom:6px; font-family:inherit;}
+  .edit-form input:first-child{border-color:var(--gold);}
+  .edit-row{display:flex; gap:6px;}
+  .btn-save{flex:1; background:var(--green-dark); color:#fff; border:none; border-radius:8px; padding:6px; font-size:12px; font-weight:600; cursor:pointer;}
+  .btn-cancel{width:32px; background:#F0EEE6; color:var(--muted); border:none; border-radius:8px; cursor:pointer;}
+  .fab{position:fixed; bottom:24px; right:20px; width:56px; height:56px; border-radius:50%; background:var(--gold); border:none; box-shadow:0 4px 12px rgba(0,0,0,.2); font-size:26px; color:var(--green-dark); cursor:pointer; display:flex; align-items:center; justify-content:center;}
+  .overlay{position:fixed; inset:0; background:rgba(0,0,0,.4); display:flex; align-items:flex-end; z-index:30;}
+  .overlay.center{align-items:center; justify-content:center; padding:0 24px;}
+  .sheet{background:var(--cream); width:100%; border-radius:24px 24px 0 0; padding:20px; max-height:88vh; overflow-y:auto;}
+  .modal{background:#fff; border-radius:16px; padding:24px; width:100%; max-width:320px;}
+  .handle{width:40px; height:4px; background:var(--line); border-radius:999px; margin:0 auto 16px;}
+  .sheet h2, .modal h3{font-family:'Fraunces',serif; font-weight:700; color:var(--green-dark); margin:0 0 12px;}
+  .upload-box{width:100%; aspect-ratio:16/9; background:#fff; border:2px dashed var(--line); border-radius:12px; display:flex; flex-direction:column; align-items:center; justify-content:center; margin-bottom:16px; cursor:pointer; overflow:hidden; color:var(--muted); font-size:14px;}
+  .upload-box img{width:100%; height:100%; object-fit:cover;}
+  label.field-label{font-size:12px; font-weight:600; color:var(--muted); display:block; margin-bottom:4px;}
+  .field{margin-bottom:12px;}
+  .field-row{display:flex; gap:12px;}
+  .field-row .field{flex:1;}
+  input[type=text], input[type=number], input[type=password]{width:100%; font-size:14px; border:1px solid var(--line); border-radius:12px; padding:10px 12px; background:#fff; font-family:inherit;}
+  .sheet-actions{display:flex; gap:10px; margin-top:20px;}
+  .btn-outline{flex:1; padding:12px; border-radius:12px; font-weight:600; font-size:14px; background:#fff; border:1px solid var(--line); color:var(--muted); cursor:pointer;}
+  .btn-primary{flex:1; padding:12px; border-radius:12px; font-weight:600; font-size:14px; background:var(--green-dark); color:#fff; border:none; cursor:pointer;}
+  .btn-primary:disabled{opacity:.4;}
+  .lock-icon-circle{width:40px;height:40px;border-radius:50%;background:var(--green-dark);display:flex;align-items:center;justify-content:center;margin-bottom:12px;color:var(--gold);font-size:18px;}
+  .pin-error{color:var(--red); font-size:12px; margin:4px 0 0;}
+  .loading{text-align:center; padding:60px 0; color:var(--muted);}
+  .hidden{display:none !important;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div>
+      <div class="eyebrow">📦 <span>Katalog Produk</span></div>
+      <img src="logo-wordmark.png" alt="Naila Store" class="logo-wordmark" />
+      <p class="subcount"><span id="itemCount">0</span> produk terdaftar</p>
+    </div>
+    <button class="lock-btn" id="lockBtn">🔒</button>
+  </div>
+  <div id="adminBadge" class="admin-badge hidden">Mode Admin aktif</div>
+</header>
+
+<main>
+  <div id="loading" class="loading">Memuat…</div>
+  <div id="emptyState" class="empty hidden">
+    <div style="font-size:32px;">📦</div>
+    <p class="title">Belum ada produk</p>
+    <p class="sub" id="emptySub">Katalog akan segera diisi.</p>
+  </div>
+  <div id="grid" class="grid hidden"></div>
+</main>
+
+<button class="fab hidden" id="fabAdd">+</button>
+
+<!-- Login modal -->
+<div class="overlay center hidden" id="pinOverlay">
+  <div class="modal">
+    <div class="lock-icon-circle">🔒</div>
+    <h3>Login Admin</h3>
+    <p style="font-size:12px;color:var(--muted);margin:0 0 12px;">Masuk untuk menambah produk & ubah harga.</p>
+    <div class="field">
+      <label class="field-label">Username</label>
+      <input type="text" id="userInput" placeholder="Username" autocomplete="username" />
+    </div>
+    <div class="field" style="margin-bottom:4px;">
+      <label class="field-label">Password</label>
+      <input type="password" id="pinInput" placeholder="Password" autocomplete="current-password" />
+    </div>
+    <p class="pin-error hidden" id="pinError">Username atau password salah.</p>
+    <div class="sheet-actions">
+      <button class="btn-outline" id="pinCancel">Batal</button>
+      <button class="btn-primary" id="pinSubmit">Masuk</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add product sheet -->
+<div class="overlay hidden" id="addOverlay">
+  <div class="sheet">
+    <div class="handle"></div>
+    <h2>Tambah Produk</h2>
+    <div class="upload-box" id="uploadBox">
+      <div id="uploadPlaceholder">🖼️<br/>Pilih gambar produk</div>
+      <img id="uploadPreview" class="hidden" />
+    </div>
+    <input type="file" accept="image/*" id="fileInput" class="hidden" />
+    <div class="field">
+      <label class="field-label">Nama Produk</label>
+      <input type="text" id="nameInput" placeholder="Contoh: HP OPPO A3 Pro 5G" />
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label class="field-label">Harga (Rp)</label>
+        <input type="number" id="priceInput" placeholder="3400000" />
+      </div>
+      <div class="field">
+        <label class="field-label">Uang Muka (Rp)</label>
+        <input type="number" id="dpInput" placeholder="600000" />
+      </div>
+    </div>
+    <div class="sheet-actions">
+      <button class="btn-outline" id="addCancel">Batal</button>
+      <button class="btn-primary" id="addSave">Simpan Produk</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+  KONFIGURASI — GANTI DENGAN CONFIG PROYEK ANDA SENDIRI
+  Cara dapatkan URL Apps Script:
+  1. Buat Google Sheet baru, beri nama sheet "Produk" (tab bawah)
+  2. Baris 1: isi header id, name, price, downPayment, image
+  3. Menu Extensions > Apps Script, tempel kode dari file Code.gs (satu paket dengan zip ini)
+  4. Klik Deploy > New deployment > pilih tipe "Web app"
+     - Execute as: Me
+     - Who has access: Anyone
+  5. Klik Deploy, copy URL yang muncul, tempel di SCRIPT_URL di bawah ini
+============================================================= -->
+<script>
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwqlg0ftJVeeXo9n4P2G_VbRImJqeWhdjt6Vd0VXhR53fZaTyBGyJc7CW1nDlSQMOdt/exec";
+
+  // Login admin — ganti sesuai keinginan Anda
+  const ADMIN_USERNAME = "admin";
+  const ADMIN_PASSWORD = "naila123";
+
+  // Ganti dengan nomor WA toko, format 62xxxxxxxxxx (tanpa + atau 0 di depan)
+  const WA_NUMBER = "6285785020609";
+  function waLink(item) {
+    const msg = `Halo, saya tertarik dengan produk ${item.name} seharga ${formatRp(item.price)}. Apakah masih tersedia?`;
+    return `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`;
+  }
+
+  let items = [];
+  let isAdmin = false;
+  let editingId = null;
+  let draftImage = null;
+
+  const $ = (id) => document.getElementById(id);
+  const formatRp = (n) => "Rp " + Number(n || 0).toLocaleString("id-ID");
+
+  async function loadItems() {
+    try {
+      const res = await fetch(SCRIPT_URL);
+      const data = await res.json();
+      if (Array.isArray(data)) {
+        items = data;
+      } else if (data && data.ok === false) {
+        console.error("Server error saat memuat data:", data.error);
+        alert("Gagal memuat katalog dari server:\n\n" + data.error);
+        items = [];
+      } else {
+        items = [];
+      }
+      items.reverse(); // terbaru di atas
+    } catch (e) {
+      console.error("Gagal memuat:", e);
+      alert(
+        "Gagal terhubung ke server (Failed to fetch).\n\n" +
+        "Kemungkinan penyebab:\n" +
+        "1. SCRIPT_URL di index.html salah atau sudah tidak berlaku\n" +
+        "2. Deployment Apps Script belum di-deploy ulang setelah diedit\n" +
+        "3. Setelan akses deployment bukan \"Anyone\"\n" +
+        "4. Nama tab di Google Sheet bukan persis \"Produk\""
+      );
+      items = [];
+    }
+    $("loading").classList.add("hidden");
+    render();
+  }
+
+  async function callApi(payload) {
+    try {
+      const res = await fetch(SCRIPT_URL, {
+        method: "POST",
+        body: JSON.stringify(payload)
+      });
+      let data;
+      try {
+        data = await res.json();
+      } catch (parseErr) {
+        return { success: false, error: "Balasan server tidak bisa dibaca (mungkin belum di-deploy ulang)." };
+      }
+      if (!data || data.ok !== true) {
+        return { success: false, error: (data && data.error) || "Server menolak permintaan tanpa keterangan." };
+      }
+      return { success: true };
+    } catch (e) {
+      console.error(e);
+      return { success: false, error: "Gagal terhubung ke server. Cek koneksi internet." };
+    }
+  }
+
+  function render() {
+    $("itemCount").textContent = items.length;
+    $("fabAdd").classList.toggle("hidden", !isAdmin);
+    $("adminBadge").classList.toggle("hidden", !isAdmin);
+
+    if (items.length === 0) {
+      $("emptyState").classList.remove("hidden");
+      $("grid").classList.add("hidden");
+      $("emptySub").textContent = isAdmin ? "Tambahkan produk pertama dengan tombol di bawah." : "Katalog akan segera diisi.";
+      return;
+    }
+    $("emptyState").classList.add("hidden");
+    $("grid").classList.remove("hidden");
+    $("grid").innerHTML = items.map(item => cardHtml(item)).join("");
+
+    items.forEach(item => {
+      const card = document.getElementById("card-" + item.id);
+      if (!card) return;
+      const delBtn = card.querySelector(".del-btn");
+      if (delBtn) delBtn.onclick = () => removeItem(item.id);
+      const editBtn = card.querySelector(".edit-btn");
+      if (editBtn) editBtn.onclick = () => { editingId = item.id; render(); };
+      const saveBtn = card.querySelector(".btn-save");
+      if (saveBtn) saveBtn.onclick = async () => {
+        const p = card.querySelector(".edit-price").value;
+        const d = card.querySelector(".edit-dp").value;
+        const prevPrice = item.price;
+        const prevDp = item.downPayment;
+        item.price = Number(p) || 0;
+        item.downPayment = Number(d) || 0;
+        editingId = null;
+        render();
+        const result = await callApi({ action: "update", id: item.id, price: item.price, downPayment: item.downPayment });
+        if (!result.success) {
+          alert("Gagal menyimpan perubahan harga: " + result.error);
+          item.price = prevPrice;
+          item.downPayment = prevDp;
+          render();
+        }
+      };
+      const cancelBtn = card.querySelector(".btn-cancel");
+      if (cancelBtn) cancelBtn.onclick = () => { editingId = null; render(); };
+    });
+  }
+
+  function cardHtml(item) {
+    const editing = isAdmin && editingId === item.id;
+    return `
+      <div class="card" id="card-${item.id}">
+        <div class="img-wrap">
+          ${item.image ? `<img src="${item.image}" />` : `<div class="img-placeholder">🖼️</div>`}
+          ${isAdmin ? `<button class="del-btn">🗑️</button>` : ""}
+        </div>
+        <div class="card-body">
+          <p class="pname">${escapeHtml(item.name)}</p>
+          ${editing ? `
+            <div class="edit-form">
+              <input type="number" class="edit-price" placeholder="Harga" value="${item.price}" />
+              <input type="number" class="edit-dp" placeholder="Uang muka" value="${item.downPayment}" />
+              <div class="edit-row">
+                <button class="btn-save">✓ Simpan</button>
+                <button class="btn-cancel">✕</button>
+              </div>
+            </div>
+          ` : `
+            <p class="price">${formatRp(item.price)}</p>
+            <p class="dp">Uang Muka: ${formatRp(item.downPayment)}</p>
+            <a class="wa-btn" href="${waLink(item)}" target="_blank" rel="noopener noreferrer">💬 Tanya via WA</a>
+            ${isAdmin ? `<button class="edit-btn">✎ Ubah harga</button>` : ""}
+          `}
+        </div>
+      </div>
+    `;
+  }
+
+  function escapeHtml(str) {
+    const d = document.createElement("div");
+    d.textContent = str;
+    return d.innerHTML;
+  }
+
+  async function removeItem(id) {
+    if (!confirm("Hapus produk ini?")) return;
+    const backup = items;
+    items = items.filter(it => it.id !== id);
+    render();
+    const result = await callApi({ action: "delete", id });
+    if (!result.success) {
+      alert("Gagal menghapus produk: " + result.error);
+      items = backup;
+      render();
+    }
+  }
+
+  // Admin login
+  $("lockBtn").onclick = () => {
+    if (isAdmin) {
+      isAdmin = false;
+      $("lockBtn").textContent = "🔒";
+      render();
+    } else {
+      $("pinOverlay").classList.remove("hidden");
+      $("userInput").value = "";
+      $("pinInput").value = "";
+      $("pinError").classList.add("hidden");
+      $("userInput").focus();
+    }
+  };
+  $("pinCancel").onclick = () => $("pinOverlay").classList.add("hidden");
+  $("pinSubmit").onclick = submitPin;
+  $("pinInput").addEventListener("keydown", (e) => { if (e.key === "Enter") submitPin(); });
+  function submitPin() {
+    if ($("userInput").value === ADMIN_USERNAME && $("pinInput").value === ADMIN_PASSWORD) {
+      isAdmin = true;
+      $("lockBtn").textContent = "🔓";
+      $("pinOverlay").classList.add("hidden");
+      render();
+    } else {
+      $("pinError").classList.remove("hidden");
+    }
+  }
+
+  // Add product sheet
+  $("fabAdd").onclick = () => {
+    draftImage = null;
+    $("uploadPreview").classList.add("hidden");
+    $("uploadPlaceholder").classList.remove("hidden");
+    $("nameInput").value = "";
+    $("priceInput").value = "";
+    $("dpInput").value = "";
+    $("addOverlay").classList.remove("hidden");
+  };
+  $("addCancel").onclick = () => $("addOverlay").classList.add("hidden");
+  $("uploadBox").onclick = () => $("fileInput").click();
+  $("fileInput").onchange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        const maxW = 600;
+        const scale = Math.min(1, maxW / img.width);
+        canvas.width = img.width * scale;
+        canvas.height = img.height * scale;
+        canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
+        draftImage = canvas.toDataURL("image/jpeg", 0.6);
+        $("uploadPreview").src = draftImage;
+        $("uploadPreview").classList.remove("hidden");
+        $("uploadPlaceholder").classList.add("hidden");
+      };
+      img.src = reader.result;
+    };
+    reader.readAsDataURL(file);
+  };
+  $("addSave").onclick = async () => {
+    const name = $("nameInput").value.trim();
+    const price = $("priceInput").value;
+    if (!name || !price) return;
+    const newItem = {
+      id: Date.now().toString(),
+      name,
+      price: Number(price),
+      downPayment: Number($("dpInput").value || 0),
+      image: draftImage
+    };
+    items.unshift(newItem);
+    render();
+    $("addOverlay").classList.add("hidden");
+    $("addSave").textContent = "Menyimpan...";
+    const result = await callApi({
+      action: "add",
+      id: newItem.id,
+      name: newItem.name,
+      price: newItem.price,
+      downPayment: newItem.downPayment,
+      imageBase64: draftImage
+    });
+    $("addSave").textContent = "Simpan Produk";
+    if (!result.success) {
+      alert("Produk GAGAL disimpan ke server:\n\n" + result.error + "\n\nProduk akan dihapus dari tampilan karena tidak benar-benar tersimpan.");
+      items = items.filter(it => it.id !== newItem.id);
+      render();
+    } else {
+      loadItems();
+    }
+  };
+
+  loadItems();
+</script>
+
+</body>
+</html>
